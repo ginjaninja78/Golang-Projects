@@ -3,7 +3,9 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strings"
+	"time"
+	// "os/exec" package for linux and mac. Used to display popup
+	// "beep" package for windows. Windows only. "github.com/gen2brain/beeep"
 )
 
 // Package level variables, requires full definition syntax
@@ -11,7 +13,17 @@ const confTickets int = 50
 
 var remTickets uint = 50
 var confName string = "Go Conference"
-var bookings = []string{} // Bookings slice
+
+// var bookings = make([]map[string]string, 0) // Bookings slice of maps
+var bookings = make([]UserData, 0) // Bookings user data struct
+
+type UserData struct {
+	firstName       string
+	lastName        string
+	email           string
+	numberOfTickets uint
+	// optIn				bool
+}
 
 // "main" function is the default function go looks for to run. Additional functions must be explicitly called. Usage: functionName()
 func main() {
@@ -28,6 +40,7 @@ func main() {
 		if isValidName && isValidEmail && isValidTicketQty {
 
 			bookTicket(userTickets, firstName, lastName, email)
+			sendTicket(userTickets, firstName, lastName, email)
 
 			firstNames := getFirstNames()
 			fmt.Printf("The first names of the bookings are: %v\n", firstNames)
@@ -63,8 +76,7 @@ func greetUsers() {
 func getFirstNames() []string {
 	firstNames := []string{}
 	for _, booking := range bookings {
-		var names = strings.Fields(booking)
-		firstNames = append(firstNames, names[0])
+		firstNames = append(firstNames, booking.firstName)
 	}
 	return firstNames
 }
@@ -97,8 +109,32 @@ func getUserInput() (string, string, string, uint) {
 
 func bookTicket(userTickets uint, firstName string, lastName string, email string) {
 	remTickets = remTickets - userTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	// Create a struct for user details
+	var userData = UserData{
+		firstName:       firstName,
+		lastName:        lastName,
+		email:           email,
+		numberOfTickets: userTickets,
+		// optIn: true,
+	}
+	// For use with maps
+	// userData["firstName"] = firstName
+	// userData["lastName"] = lastName
+	// userData["email"] = email
+	// userData["numberOfTickets"] = strconv.FormatUint(uint64(userTickets), 10)
+
+	bookings = append(bookings, userData)
+	fmt.Printf("List of bookings is %v\n", bookings)
 
 	fmt.Printf("Thank you, %v %v for purchasing %v tickets. You will receive a confirmation email at %v.\n", firstName, lastName, userTickets, email)
 	fmt.Printf("There are %v tickets remaining for %v\n", remTickets, confName)
+}
+
+func sendTicket(userTickets uint, firstName string, lastName string, email string) {
+	time.Sleep(5 * time.Second)
+	var ticket = fmt.Sprintf("%v tickets for %v %v", userTickets, firstName, lastName)
+	fmt.Println("######################")
+	fmt.Printf("Sending ticket:\n%v\nto email address %v\n", ticket, email)
+	fmt.Println("######################")
 }
