@@ -1,9 +1,9 @@
 package main
 
 import (
+	"booking-app/helper"
 	"fmt"
 	"strings"
-	"github.com/ginjaninja78/Golang-Projects/booking-app/helper"
 )
 
 // Package level variables, requires full definition syntax
